@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { socket } from "../socket/socket";
+import socket from "../socket/socket";
 
 const Blog = () => {
   let [like, setLike] = useState(false);
@@ -18,8 +18,10 @@ const Blog = () => {
   }, [data]);
 
   useEffect(() => {
-    socket.emit("some", "some data show");
-  }, [data]);
+    socket.on("Connected", (message) => {
+      console.log(message);
+    });
+  }, []);
 
   return (
     <div>
