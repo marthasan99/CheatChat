@@ -1,10 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 const Home = () => {
   let navigate = useNavigate();
+  let [allBlog, setAllBlog] = useState([]);
+  console.log(allBlog);
 
   let data = useSelector((e) => e.user.userInfo);
 
@@ -13,6 +15,20 @@ const Home = () => {
       navigate("/");
     }
   }, [data]);
+
+  useEffect(() => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: "http://localhost:1010/api/v1/frontend/blog/all",
+    };
+
+    axios.request(config).then((response) => {
+      if ("success" in response.data) {
+        setAllBlog(response.data.data);
+      }
+    });
+  }, []);
   return (
     <>
       {/* navbar */}
@@ -73,390 +89,78 @@ const Home = () => {
                 </p>
               </div>
               <div className="grid gap-8 lg:grid-cols-2">
-                <article className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  ">
-                  <div className="flex justify-between items-center mb-5 text-gray-500">
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-                      <svg
-                        className="mr-1 w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                      </svg>
-                      Tutorial
-                    </span>
-                    <span className="text-sm cursor-pointer">
-                      View all comment
-                    </span>
-                  </div>
-
-                  <div className="border p-4 my-4">
-                    <img
-                      className="h-60 w-full object-cover"
-                      src="blog01.avif"
-                      alt=""
-                    />
-                  </div>
-
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
-                  </h2>
-                  <p className="mb-5 font-light text-gray-500 ">
-                    Static websites are now used to bootstrap lots of websites
-                    and are becoming the basis for a variety of tools that even
-                    influence both web designers and developers influence both
-                    web designers and developers.
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        className="w-7 h-7 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                        alt="Jese Leos avatar"
-                      />
-                      <span className="font-medium ">Jese Leos</span>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center font-medium text-primary-600  hover:underline"
+                {allBlog.length != 0 &&
+                  allBlog.map((item, index) => (
+                    <article
+                      key={index}
+                      className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  "
                     >
-                      Read more
-                      <svg
-                        className="ml-2 w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </article>
-                <article className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  ">
-                  <div className="flex justify-between items-center mb-5 text-gray-500">
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-                      <svg
-                        className="mr-1 w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                      </svg>
-                      Tutorial
-                    </span>
-                    <span className="text-sm cursor-pointer">
-                      View all comment
-                    </span>
-                  </div>
+                      <div className="flex justify-between items-center mb-5 text-gray-500">
+                        <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
+                          <svg
+                            className="mr-1 w-3 h-3"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
+                          </svg>
+                          Tutorial
+                        </span>
+                        <span className="text-sm cursor-pointer">
+                          View all comment
+                        </span>
+                      </div>
 
-                  <div className="border p-4 my-4">
-                    <img
-                      className="h-60 w-full object-cover"
-                      src="blog01.avif"
-                      alt=""
-                    />
-                  </div>
+                      <div className="border p-4 my-4">
+                        <img
+                          className="h-60 w-full object-cover"
+                          src={`http://localhost:1010/api/v1/images/${item.image}`}
+                          alt=""
+                        />
+                      </div>
 
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
-                  </h2>
-                  <p className="mb-5 font-light text-gray-500 ">
-                    Static websites are now used to bootstrap lots of websites
-                    and are becoming the basis for a variety of tools that even
-                    influence both web designers and developers influence both
-                    web designers and developers.
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        className="w-7 h-7 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                        alt="Jese Leos avatar"
-                      />
-                      <span className="font-medium ">Jese Leos</span>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center font-medium text-primary-600  hover:underline"
-                    >
-                      Read more
-                      <svg
-                        className="ml-2 w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </article>
-                <article className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  ">
-                  <div className="flex justify-between items-center mb-5 text-gray-500">
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-                      <svg
-                        className="mr-1 w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                      </svg>
-                      Tutorial
-                    </span>
-                    <span className="text-sm cursor-pointer">
-                      View all comment
-                    </span>
-                  </div>
+                      <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
+                        <a href="#">{item.title}</a>
+                      </h2>
+                      <p className="mb-5 font-light text-gray-500 ">
+                        {item.description.substr(0, 120)}...
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-4">
+                          <img
+                            className="w-7 h-7 rounded-full"
+                            src={`http://localhost:1010/api/v1/images/${item.authId.image}`}
+                            alt="Jese Leos avatar"
+                          />
+                          <span className="font-medium ">
+                            {item.authId.uname}
+                          </span>
+                        </div>
 
-                  <div className="border p-4 my-4">
-                    <img
-                      className="h-60 w-full object-cover"
-                      src="blog01.avif"
-                      alt=""
-                    />
-                  </div>
-
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
-                  </h2>
-                  <p className="mb-5 font-light text-gray-500 ">
-                    Static websites are now used to bootstrap lots of websites
-                    and are becoming the basis for a variety of tools that even
-                    influence both web designers and developers influence both
-                    web designers and developers.
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        className="w-7 h-7 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                        alt="Jese Leos avatar"
-                      />
-                      <span className="font-medium ">Jese Leos</span>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center font-medium text-primary-600  hover:underline"
-                    >
-                      Read more
-                      <svg
-                        className="ml-2 w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </article>
-                <article className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  ">
-                  <div className="flex justify-between items-center mb-5 text-gray-500">
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-                      <svg
-                        className="mr-1 w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                      </svg>
-                      Tutorial
-                    </span>
-                    <span className="text-sm cursor-pointer">
-                      View all comment
-                    </span>
-                  </div>
-
-                  <div className="border p-4 my-4">
-                    <img
-                      className="h-60 w-full object-cover"
-                      src="blog01.avif"
-                      alt=""
-                    />
-                  </div>
-
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
-                  </h2>
-                  <p className="mb-5 font-light text-gray-500 ">
-                    Static websites are now used to bootstrap lots of websites
-                    and are becoming the basis for a variety of tools that even
-                    influence both web designers and developers influence both
-                    web designers and developers.
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        className="w-7 h-7 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                        alt="Jese Leos avatar"
-                      />
-                      <span className="font-medium ">Jese Leos</span>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center font-medium text-primary-600  hover:underline"
-                    >
-                      Read more
-                      <svg
-                        className="ml-2 w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </article>
-                <article className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  ">
-                  <div className="flex justify-between items-center mb-5 text-gray-500">
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-                      <svg
-                        className="mr-1 w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                      </svg>
-                      Tutorial
-                    </span>
-                    <span className="text-sm cursor-pointer">
-                      View all comment
-                    </span>
-                  </div>
-
-                  <div className="border p-4 my-4">
-                    <img
-                      className="h-60 w-full object-cover"
-                      src="blog01.avif"
-                      alt=""
-                    />
-                  </div>
-
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
-                  </h2>
-                  <p className="mb-5 font-light text-gray-500 ">
-                    Static websites are now used to bootstrap lots of websites
-                    and are becoming the basis for a variety of tools that even
-                    influence both web designers and developers influence both
-                    web designers and developers.
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        className="w-7 h-7 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                        alt="Jese Leos avatar"
-                      />
-                      <span className="font-medium ">Jese Leos</span>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center font-medium text-primary-600  hover:underline"
-                    >
-                      Read more
-                      <svg
-                        className="ml-2 w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </article>
-                <article className="p-6 bg-white rounded-lg border border-gray-200 shadow-md  ">
-                  <div className="flex justify-between items-center mb-5 text-gray-500">
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-                      <svg
-                        className="mr-1 w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                      </svg>
-                      Tutorial
-                    </span>
-                    <span className="text-sm cursor-pointer">
-                      View all comment
-                    </span>
-                  </div>
-
-                  <div className="border p-4 my-4">
-                    <img
-                      className="h-60 w-full object-cover"
-                      src="blog01.avif"
-                      alt=""
-                    />
-                  </div>
-
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
-                  </h2>
-                  <p className="mb-5 font-light text-gray-500 ">
-                    Static websites are now used to bootstrap lots of websites
-                    and are becoming the basis for a variety of tools that even
-                    influence both web designers and developers influence both
-                    web designers and developers.
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        className="w-7 h-7 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                        alt="Jese Leos avatar"
-                      />
-                      <span className="font-medium ">Jese Leos</span>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center font-medium text-primary-600  hover:underline"
-                    >
-                      Read more
-                      <svg
-                        className="ml-2 w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </article>
+                        <Link to={`/blog/${item._id}`}>
+                          <button
+                            href="#"
+                            className="inline-flex items-center font-medium text-primary-600  hover:underline"
+                          >
+                            Read more
+                            <svg
+                              className="ml-2 w-4 h-4"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              ></path>
+                            </svg>
+                          </button>
+                        </Link>
+                      </div>
+                    </article>
+                  ))}
               </div>
             </div>
           </section>

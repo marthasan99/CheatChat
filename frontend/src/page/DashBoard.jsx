@@ -3,12 +3,18 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import socket from "../socket/socket";
 
 const Dash = () => {
   let data = useSelector((e) => e.user.userInfo);
   let navigate = useNavigate();
   let [show, setShow] = useState(true);
+  let [realTime, setRealTime] = useState(false);
   let [allBlog, setAllBlog] = useState([]);
+  let [editBlog, setEditBlog] = useState({
+    title: "",
+    description: "",
+  });
   let [title, setTitle] = useState("");
   let [description, setDescription] = useState("");
   const [image, setImage] = useState("");
@@ -46,6 +52,8 @@ const Dash = () => {
           update: false,
           table: true,
         });
+
+        setRealTime(!realTime);
       }
     });
   };
@@ -63,14 +71,49 @@ const Dash = () => {
     };
 
     axios.request(config).then((response) => {
-      console.log(response.data);
-
       if ("data" in response.data) {
         console.log(response.data.data);
         setAllBlog(response.data.data);
       }
     });
-  }, []);
+  }, [realTime]);
+  const handleDelete = (id) => {
+    // console.log(id);
+    socket.emit("blogDelete", id);
+    socket.on("deleteBlog", (info) => {
+      if (info._id) {
+        setAllBlog((allData) => {
+          let arr = [...allData];
+          let updatedData = arr.filter((item) => item._id != info._id);
+          // console.log(updatedData);
+          return updatedData;
+        });
+      }
+    });
+  };
+  const handleEditBlog = (id) => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `http://localhost:1010/api/v1/backend/blog/singleblog/${id}`,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        if ("success" in response.data) {
+          // console.log(response.data.data);
+          setEditBlog(response.data.data);
+        }
+
+        if ("success" in response.data) {
+          setRealTime(!realTime);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div>
@@ -271,6 +314,7 @@ const Dash = () => {
                               update: true,
                               table: false,
                             });
+                            handleEditBlog(item._id);
                           }}
                           className="w-full h-full p-3 text-white bg-gray-700 outline-none"
                         >
@@ -281,7 +325,10 @@ const Dash = () => {
                         className="border "
                         width="100px"
                       >
-                        <button className="w-full h-full p-3 text-white bg-red-700 outline-none">
+                        <button
+                          onClick={() => handleDelete(item._id)}
+                          className="w-full h-full p-3 text-white bg-red-700 outline-none"
+                        >
                           Delete
                         </button>
                       </td>
@@ -415,6 +462,7 @@ const Dash = () => {
                     className="w-full h-full p-3 bg-transparent outline-none"
                     type="text"
                     placeholder="Blog title..."
+                    value={editBlog.title}
                   />
                 </td>
               </tr>
@@ -425,9 +473,15 @@ const Dash = () => {
                 <td className="border">
                   <textarea
                     className="w-full h-40 p-3 bg-transparent outline-none"
+                    value={description}
+                    onChange={() => {}}
                     type="text"
                     placeholder="Description..."
-                  />
+                    cols="30"
+                    rows="10"
+                  >
+                    {editBlog.description}
+                  </textarea>
                 </td>
               </tr>
               <tr>

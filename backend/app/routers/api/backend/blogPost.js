@@ -33,10 +33,12 @@ const upload = multer({ storage: storage });
 const {
   blogCreate,
   blogAll,
+  singleBlog,
 } = require("../../../controllers/backend/blogController");
 const _ = express.Router();
 
 _.post("/create", upload.single("image_post"), blogCreate);
 _.get("/all", blogAll);
+_.get("/singleblog/:id", singleBlog);
 
 module.exports = _;

@@ -1,8 +1,7 @@
 const express = require("express");
 const _ = express.Router();
+const blog = require("./blog.js");
 
-_.use("/frontend", (req, res) => {
-  res.send("Frontend Page");
-});
+_.use("/blog", blog);
 
 module.exports = _;

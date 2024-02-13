@@ -2,13 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import socket from "../socket/socket";
+import axios from "axios";
 
 const Blog = () => {
   let [like, setLike] = useState(false);
+  let [blogInfo, setBlogInfo] = useState("");
   let navigate = useNavigate();
-
+  let { id } = useParams();
   let data = useSelector((e) => e.user.userInfo);
 
   useEffect(() => {
@@ -21,6 +23,23 @@ const Blog = () => {
     socket.on("Connected", (message) => {
       console.log(message);
     });
+  }, []);
+  useEffect(() => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `http://localhost:1010/api/v1/frontend/blog/singleblogs/${id}`,
+    };
+    axios
+      .request(config)
+      .then((response) => {
+        if ("success" in response.data) {
+          setBlogInfo(response.data.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
@@ -60,29 +79,16 @@ const Blog = () => {
                   <div className="border p-4 my-4">
                     <img
                       className="h-[600px] w-full object-cover"
-                      src="blog01.avif"
+                      src={`http://localhost:1010/api/v1/images/${blogInfo?.image}`}
                       alt=""
                     />
                   </div>
 
                   <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                    <a href="#">How to quickly deploy a static website</a>
+                    <a href="#">{blogInfo?.title}</a>
                   </h2>
                   <p className="mb-5 font-light text-gray-500 ">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Animi qui veritatis dolorum quo voluptatibus quod quaerat
-                    modi adipisci, deserunt suscipit tempora, voluptates vero
-                    eaque rem fugiat possimus minima perspiciatis omnis
-                    aspernatur iure cumque? Sit, officiis totam, adipisci illum
-                    accusamus molestias qui quae voluptatibus possimus itaque
-                    minima earum rerum et culpa iste soluta obcaecati pariatur
-                    enim, aspernatur eligendi? Pariatur necessitatibus ipsa
-                    fugit molestias laboriosam natus reiciendis ex neque alias
-                    eligendi ab totam commodi modi adipisci labore soluta
-                    quaerat magni voluptatem veniam dolorem consequatur animi
-                    fugiat, voluptate sunt. Obcaecati, nihil maxime? Incidunt,
-                    commodi aliquid? Explicabo voluptatem laudantium, rerum
-                    consectetur officia accusantium sunt?
+                    {blogInfo?.description}
                   </p>
                   <div className="flex justify-between items-center">
                     <div>

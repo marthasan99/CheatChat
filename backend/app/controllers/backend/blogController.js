@@ -25,5 +25,13 @@ const blogController = {
       data: allBlog,
     });
   },
+  async singleBlog(req, res) {
+    const { id } = req.params;
+    const allBlog = await blogPost.find({ _id: id });
+    res.send({
+      success: "ok",
+      data: allBlog[0],
+    });
+  },
 };
 module.exports = blogController;
