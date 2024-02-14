@@ -41,6 +41,23 @@ const Blog = () => {
         console.log(error);
       });
   }, []);
+  const handleLike = (blogId) => {
+    console.log(blogId, data.userId);
+
+    socket.emit("blogLike", {
+      blogId,
+      authId: data.userId,
+    });
+
+    socket.on("likeBlog", (blogInfo) => {
+      setBlogInfo(blogInfo);
+      if (blogInfo) {
+        setLike(!like);
+      }
+    });
+
+    setLike(!like);
+  };
 
   return (
     <div>
@@ -93,16 +110,17 @@ const Blog = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       {like ? (
-                        <AiOutlineLike
-                          className="text-2xl cursor-pointer"
-                          onClick={() => setLike(!like)}
-                        />
-                      ) : (
                         <AiFillLike
                           className="text-2xl cursor-pointer"
-                          onClick={() => setLike(!like)}
+                          onClick={() => handleLike(blogInfo?._id)}
+                        />
+                      ) : (
+                        <AiOutlineLike
+                          className="text-2xl cursor-pointer"
+                          onClick={() => handleLike(blogInfo?._id)}
                         />
                       )}
+                      {blogInfo?.like.length}
                     </div>
                     <div>
                       <form>

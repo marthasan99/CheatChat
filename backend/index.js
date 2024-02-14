@@ -44,6 +44,33 @@ io.on("connection", (socket) => {
     let deleteBlog = await blogPost.findByIdAndDelete({ _id: blog[0]._id });
     socket.emit("deleteBlog", deleteBlog);
   });
+  socket.on("blogLike", async (data) => {
+    let blog = await blogPost.find({ _id: data.blogId });
+
+    if (blog[0].like.includes(data.authId)) {
+      let likeArr = [...blog[0].like];
+      likeArr.splice(likeArr.indexOf(data.authId), 1);
+      let blogUpdate = await blogPost.findByIdAndUpdate(
+        { _id: data.blogId },
+        {
+          like: likeArr,
+        },
+        { new: true }
+      );
+      socket.emit("likeBlog", blogUpdate);
+    } else {
+      let blogUpdate = await blogPost.findByIdAndUpdate(
+        { _id: data.blogId },
+        {
+          $push: {
+            like: data.authId,
+          },
+        },
+        { new: true }
+      );
+      socket.emit("likeBlog", blogUpdate);
+    }
+  });
 });
 
 app.use(route);

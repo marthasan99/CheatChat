@@ -34,10 +34,12 @@ const {
   blogCreate,
   blogAll,
   singleBlog,
+  blogUpdate,
 } = require("../../../controllers/backend/blogController");
 const _ = express.Router();
 
 _.post("/create", upload.single("image_post"), blogCreate);
+_.post("/update", upload.single("photo_upload"), blogUpdate);
 _.get("/all", blogAll);
 _.get("/singleblog/:id", singleBlog);
 

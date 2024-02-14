@@ -16,8 +16,11 @@ const Dash = () => {
     description: "",
   });
   let [title, setTitle] = useState("");
+  let [title2, setTitle2] = useState("");
   let [description, setDescription] = useState("");
+  let [description2, setDescription2] = useState("");
   const [image, setImage] = useState("");
+  const [image2, setImage2] = useState("");
   let [showPage, setShowPage] = useState({
     add: true,
     update: false,
@@ -113,6 +116,51 @@ const Dash = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handlePostUpdate = (id) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:1010/api/v1/backend/blog/update",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      data: {
+        title2,
+        description2,
+        photo_upload: image2,
+        blogId: id,
+        image_name: editBlog?.image,
+      },
+    };
+
+    axios.request(config).then((response) => {
+      console.log(response.data);
+
+      if ("success" in response.data) {
+        setTitle2("");
+        setDescription2("");
+        setImage2("");
+        setShowPage({
+          add: false,
+          update: false,
+          table: true,
+        });
+
+        setAllBlog((prev) => {
+          let arr = [...prev];
+
+          let updateArr = arr.map((item) => {
+            if (item._id == response.data.data._id) {
+              return { ...response.data.data };
+            }
+            return item;
+          });
+          return updateArr;
+        });
+      }
+    });
   };
 
   return (
@@ -440,6 +488,11 @@ const Dash = () => {
                   Image
                 </th>
                 <td className="border">
+                  <img
+                    src={`http://localhost:1010/api/v1/images/${editBlog?.image}`}
+                    alt=""
+                  />
+
                   <label
                     className="block w-full h-full p-3 pb-0 outline-none cursor-pointer "
                     htmlFor="image"
@@ -450,6 +503,8 @@ const Dash = () => {
                     id="image"
                     className="block w-full h-full p-3 pt-0 outline-none cursor-pointer "
                     type="file"
+                    name="photo_upload"
+                    onChange={(e) => setImage2(e.target.files[0])}
                   />
                 </td>
               </tr>
@@ -461,8 +516,9 @@ const Dash = () => {
                   <input
                     className="w-full h-full p-3 bg-transparent outline-none"
                     type="text"
+                    onChange={(e) => setTitle2(e.target.value)}
                     placeholder="Blog title..."
-                    value={editBlog.title}
+                    value={title2 ? title2 : editBlog.title}
                   />
                 </td>
               </tr>
@@ -473,8 +529,10 @@ const Dash = () => {
                 <td className="border">
                   <textarea
                     className="w-full h-40 p-3 bg-transparent outline-none"
-                    value={description}
-                    onChange={() => {}}
+                    value={description2 ? description2 : editBlog.description}
+                    onChange={(e) => {
+                      setDescription2(e.target.value);
+                    }}
                     type="text"
                     placeholder="Description..."
                     cols="30"
@@ -497,6 +555,7 @@ const Dash = () => {
                         table: true,
                       });
                       setShow(false);
+                      handlePostUpdate(editBlog?._id);
                     }}
                     className="w-full h-full p-3 text-white bg-green-700 outline-none"
                   >
