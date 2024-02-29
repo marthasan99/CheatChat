@@ -1,5 +1,6 @@
 const blogPost = require("../../model/blogPost");
 const fs = require("node:fs");
+const path = require("node:path");
 
 const blogController = {
   blogCreate(req, res) {
@@ -29,6 +30,7 @@ const blogController = {
   async singleBlog(req, res) {
     const { id } = req.params;
     const allBlog = await blogPost.find({ _id: id });
+
     res.send({
       success: "ok",
       data: allBlog[0],

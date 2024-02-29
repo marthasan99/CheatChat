@@ -6,12 +6,14 @@ var cors = require("cors");
 const databaseConnect = require("./app/database/database");
 const fs = require("node:fs");
 const app = express();
+const commentModel = require("./app/model/comment");
 
 const rootsServer = http.createServer(app);
 app.use(cors());
 const route = require("./app/routers");
 const { default: workSocket } = require("./app/socket/workSocket");
 const blogPost = require("./app/model/blogPost");
+const path = require("node:path");
 const port = process.env.APP_PORT;
 const baseUrl = process.env.BASE_URL;
 
@@ -70,6 +72,28 @@ io.on("connection", (socket) => {
       );
       socket.emit("likeBlog", blogUpdate);
     }
+  });
+  socket.on("addComment", async ({ comment, id, authId }) => {
+    console.log(comment, id);
+
+    const commentAdd = new commentModel({
+      description: comment,
+      authId,
+      postId: id,
+    });
+    commentAdd.save();
+
+    const updateBlog = await blogPost.findByIdAndUpdate(
+      { _id: id },
+      { $push: { commentId: commentAdd._id } }
+    );
+
+    console.log(commentAdd);
+    const allComment = await commentModel
+      .find({ postId: id })
+      .populate({ path: "authId", select: "_id uname image" });
+
+    socket.emit("commentAdd", allComment);
   });
 });
 

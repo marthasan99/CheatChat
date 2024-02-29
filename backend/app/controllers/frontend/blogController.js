@@ -14,8 +14,15 @@ const blogController = {
     const { id } = req.params;
     console.log("ok id", id);
 
-    const allBlog = await blogPost.find({ _id: id });
-
+    const allBlog = await blogPost.find({ _id: id }).populate({
+      path: "commentId",
+      select: "_id description authId",
+      populate: {
+        path: "authId",
+        select: "_id uname image",
+      },
+    });
+    console.log("myblog", allBlog);
     res.send({
       success: "ok",
       data: allBlog[0],

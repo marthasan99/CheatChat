@@ -8,6 +8,8 @@ import axios from "axios";
 
 const Blog = () => {
   let [like, setLike] = useState(false);
+  let [comment, setComment] = useState("");
+  let [allComment, setAllComment] = useState([]);
   let [blogInfo, setBlogInfo] = useState("");
   let navigate = useNavigate();
   let { id } = useParams();
@@ -34,7 +36,9 @@ const Blog = () => {
       .request(config)
       .then((response) => {
         if ("success" in response.data) {
+          console.log(response.data.data);
           setBlogInfo(response.data.data);
+          setAllComment(response.data.data.commentId);
         }
       })
       .catch((error) => {
@@ -57,6 +61,22 @@ const Blog = () => {
     });
 
     setLike(!like);
+  };
+
+  const handleComment = () => {
+    socket.emit("addComment", {
+      comment,
+      id: blogInfo?._id,
+      authId: data.userId,
+    });
+    socket.on("commentAdd", (data) => {
+      console.log(data);
+      if (data) {
+        setComment("");
+        setAllComment(data);
+      }
+      console.log(comment);
+    });
   };
 
   return (
@@ -120,7 +140,7 @@ const Blog = () => {
                           onClick={() => handleLike(blogInfo?._id)}
                         />
                       )}
-                      {blogInfo?.like.length}
+                      {blogInfo.like?.length}
                     </div>
                     <div>
                       <form>
@@ -134,11 +154,14 @@ const Blog = () => {
                           <textarea
                             id="chat"
                             rows="1"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
                             className="block mx-4 p-2.5 w-[350px] text-sm text-gray-900 outline-none bg-white rounded-lg border border-gray-300    "
                             placeholder="Your message..."
                           ></textarea>
                           <button
-                            type="submit"
+                            type="button"
+                            onClick={handleComment}
                             className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100  "
                           >
                             <svg
@@ -157,6 +180,32 @@ const Blog = () => {
                     </div>
                   </div>
                 </article>
+                <div className="px-6 border border-slate-300 py-7 rounded-xl">
+                  {allComment.length != 0 &&
+                    allComment.map((item, index) => (
+                      <article key={index}>
+                        <div className="flex items-center mb-4">
+                          <img
+                            className="w-10 h-10 rounded-full me-4"
+                            src={`http://localhost:1010/api/v1/images/${item.authId?.image}`}
+                            alt=""
+                          />
+                          <div className="font-medium ">
+                            <p>
+                              {item.authId.uname}
+                              <time className="block text-sm text-gray-500 dark:text-gray-400">
+                                Active
+                              </time>
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="mb-2 text-gray-500 ">
+                          {item.description}
+                        </p>
+                      </article>
+                    ))}
+                </div>
               </div>
             </div>
           </section>
